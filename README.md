@@ -1,0 +1,2 @@
+# MonitoringPojazdow
+Projekt kompetencyjny
