@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Lokalizator</string>
+    <string name="latitude">Latitude:</string>
+    <string name="longitude">Longitude:</string>
+    <string name="no_data">No Data</string>
+    <string name="get_actual_position">Get Actual Position</string>
+    <string name="driverID">Driver ID: </string>
+    <string name="vehicleId">Vehicle ID: </string>
+    <string name="updateIds">Update IDs</string>
+</resources>
