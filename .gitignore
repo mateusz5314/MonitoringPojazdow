@@ -80,3 +80,6 @@ lint/tmp/
 
 # Python
 __pycache__
+
+Lib
+venv
