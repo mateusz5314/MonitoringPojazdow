@@ -1,0 +1,87 @@
+@startuml Zasada dzialania
+
+participant "Uzytkownik" as USER
+participant "Urzadzenie lokalizujace" as LOC
+participant "Serwer bazy danych" as DB
+participant "Aplikacka uzytkownika" as APK
+autoactivate on
+
+group Dodawanie danych
+    LOC --> DB : Dane lokalizacyjne
+    DB -> DB : Zapisz dane
+        deactivate
+end
+group Odczyt danych
+    APK -> USER : Wyswietl formularz logowania
+    USER --> APK : Dane
+    APK -> DB : Zaloguj
+    DB -> DB : Weryfikacja danych
+        DB -->DB : Wynik weryfikacji
+    DB --> APK : Wynik operacji
+    alt true
+        APK --> USER : Wyswietl komunikat o powodzeniu
+        APK -> DB : Pobierz dane uzytkownika
+        DB --> APK : Dane zalogowanego uzytkownika
+        APK --> USER : Wyswietl dostepne opcje
+        note right : Opcje zaleza od \nuprawnien uzytkownika
+        opt \n \
+            Dalsza czesc zaprezentowana jest \n \
+            w poszczegolnych przypadkach uzycia. \n
+        end
+    else false
+        APK --> USER : Wyswietl komuniakt o bledzie
+    end
+end
+
+@enduml
+
+@startuml Dostarczanie danych
+
+participant "Urzadzenie lokalizujace" as LOC
+participant "Serwer bazy danych" as DB
+autoactivate on
+
+loop tak dlugo jak urzadzenie jest dostepne
+    LOC -> LOC : Pobierz dane z GPS
+    LOC --> LOC : Dane lokalizacyjne
+    LOC -> LOC : Opisz dane lokalizacyjne
+    note right : \n \
+        Dane sa opisywane nastepujacymi wartosciami: \n \
+        - Znacznik czasu \n \
+        - Identyfikator pracownika korzystajacego z urzadzenia \n \
+        - Identyfikator pojazdu ktorym pracownik sie porusza \n
+    LOC --> LOC : Opisane dane
+    LOC --> DB :  Opisane dane lokalizacyjne
+    DB -> DB : Zweryfikuj dostarczone dane
+    DB --> DB : Wynik weryfikacji
+    alt true
+        DB --> DB : Zapisz dane
+    else false
+        DB --> DB : Porzuc dane
+    end
+end
+
+@enduml
+
+@startuml Odczyt danych
+
+participant "Aplikacka uzytkownika" as APK
+participant "Serwer bazy danych" as DB
+autoactivate on
+
+alt uzytkownik zalogowany
+    APK -> DB : Pobierz dane
+    note right : \n \
+        Mozliwe do pobrania dane : \n \
+        - lokalizacja konkretnego pojazdu w danym okresie czasu \n \
+        - lokalizacja pracownika w danym okresie czasu \n
+    DB -> DB : Zweryfikuj uprawnienia uzytkownika
+    DB --> DB : Wynik weryfikacji
+    alt true
+        DB --> APK : Dane
+    else false
+        DB --> APK : Komunikat o bledzie
+    end
+end
+
+@enduml

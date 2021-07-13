@@ -1,0 +1,57 @@
+@startuml classDiagramLokalizator
+
+class "Main activity" as main {
+    ..public..
++onRequestPermissionResult(Int, Array<String>, IntArray) : Unit
+    ..private..
+-onCreate() : Unit
+-sendLocation() : Unit
+-onGetLocationButtonEvent() : Unit
+-onUpdateIdsButtonEvent() : Unit
+    ..private..
+-latitudeValText : TextView
+-longitudeValText : TextView
+-driverIdText : EditText
+-vehicleIdText : EditText
+-driverIdVal : Int
+-vehicleIdVal : Int
+-finder : Finder
+-mainHandler : Handler
+}
+
+class "Client" as client {
+    ..pulbic..
++getClient() : Service
+}
+
+class "Finder" as finder {
+    __methods__
+    ..public..
++init(MainActivity, Context) : Unit
++startLocationUpdates() : Unit
+    ..private..
+-setupPermissions(String, Int) : Unit
+-makeRequest(String, Int) : Unit
+    ..private set..
+-fineLocationRequestCode : Int
+-coarseLocationRequestCode : Int
+-latitude : Double
+-longitude : Double
+    ..private..
+-mLocationService : FusedLocationProviderClient
+-mLocationCallback : LocationCallback
+-mIsInitDone : Boolean
+-mContext : Context
+-mMainActivity : MainActivity
+}
+
+interface "Service" as service {
+    ..pulbic..
++sendLocation(RequestBode) : Call<String>
+}
+
+main "1..*" o-- "1" client
+main "1..*" o-- "1" finder
+client "1" *-- "1" service
+
+@enduml

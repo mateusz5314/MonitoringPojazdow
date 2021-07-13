@@ -1,0 +1,215 @@
+@startuml Logowanie
+
+    actor "User / administrator" as USER
+    participant "Interface uzytkownika" as IFACE
+    participant "Aplikacja uzytkownika" as APK
+    participant "Serwer bazy danych" as DB
+
+    autoactivate on
+
+    USER --> IFACE : Zaloguj
+    IFACE -> APK : zaloguj
+    APK --> IFACE : wyswietlFormularz()
+    USER --> IFACE : Dane logowania
+    IFACE --> IFACE : walidujFormularz()
+
+    alt Dane poprawne
+        IFACE -> APK  : zaloguj(dane)
+        APK -> DB : walidujDane(dane)
+        DB --> APK : wynik walidacji
+        alt Dane poprawne
+            deactivate
+            APK --> IFACE : wyswietlKomunikatOPowodzeniu()
+            APK --> APK : rozpocznijSesje()
+        else
+            APK --> IFACE : wyswietlKomunikatOBledzie()
+        end
+    else
+        IFACE --> IFACE : wyswietlKomunikatOBledzie()
+    end
+
+@enduml
+
+@startuml Lokalizacja w przedziale czasu
+
+    actor "User / administrator" as USER
+    participant "Interface uzytkownika" as IFACE
+    participant "Aplikacja uzytkownika" as APK
+    participant "Serwer bazy danych" as DB
+
+    autoactivate on
+
+    USER --> USER
+    note right: Uzytkownik musi byc zalogowany \
+                \naby wykonac nastepujace czynnosci
+
+    USER --> IFACE : Wybierz opcje lokalizacji
+    IFACE -> APK : uruchomMape()
+    APK -> IFACE : wyswietlFormularz()
+    note right: w formularzu musi znalezc sie \
+                \n - uzytkownik i/lub pojazd \
+                \n - przedzial czasowy
+    USER --> IFACE : uzupelnij formularz
+    IFACE --> APK : dane z formularza
+    APK -> DB : pobierzDane(id, okres)
+    DB --> APK : dane
+    APK --> APK : naniesDaneNaMape()
+
+@enduml
+
+@startuml Zarzadzanie pracownikami
+
+    actor "User / administrator" as USER
+    participant "Interface uzytkownika" as IFACE
+    participant "Aplikacja uzytkownika" as APK
+    participant "Serwer bazy danych" as DB
+
+    autoactivate on
+
+    USER --> USER
+    note right: Uzytkownik musi byc zalogowany \
+                \naby wykonac nastepujace czynnosci
+
+    USER --> IFACE : Wybierz opcje zarzadzania pracownikami
+    IFACE -> APK : wyswietlPanelZarzadzania()
+    APK -> IFACE : wyswietlDostepneOpcje()
+    USER --> IFACE : Wybierz jedna z opcji
+    IFACE --> APK : wybrana opcja
+    opt dodaj pracownika
+        APK -> IFACE : wyswietlPustyFormularz()
+        USER --> IFACE : uzupelnij formularz
+        IFACE -> IFACE : walidacjaDanych()
+        alt Dane poprawne
+            IFACE --> IFACE : wyswietlKomunikatOPowodzeniu()
+            IFACE --> APK : dane
+            APK -> DB : dodajUzytkownika(dane)
+            DB --> APK : przypisane id
+            APK --> IFACE : wyswietlPrzypisaneId()
+        else
+            IFACE --> IFACE : wyswietlKomunikatOBledzie()
+        end
+    end
+    opt usun pracownika
+        APK -> IFACE : wyswietlZapytanieOId()
+        USER --> IFACE : id
+        IFACE --> APK : id
+        APK -> DB : usunUzytkownika(id)
+        alt uzytkownik istnieje
+            DB --> DB : usunUzytkownika(id)
+            DB --> APK : sukcess
+            APK --> IFACE : wyswietlKomunikatOPowodzeniu()
+        else
+            DB --> APK : blad
+            APK --> IFACE : wyswietlKomunikatOBlednymId()
+        end
+    end
+    opt edytuj pracownika
+        APK -> IFACE : wyswietlZapytanieOId()
+        USER --> IFACE : id
+        IFACE --> APK : id
+        APK -> DB : sprawdzCzyIdIstnieje(id)
+        alt id istnieje
+            DB --> APK : sukcess
+            APK -> IFACE : wyswietlFormularzZAktualnymiDanymi()
+            USER --> IFACE : poprawki w danych
+            IFACE --> APK : nowe dane
+            APK --> DB : zaktualizujDaneUzytkownika(id, dane)
+        else
+            DB --> APK : blad
+            APK --> IFACE : wyswietlKomunikatOBlednymId()
+        end
+    end
+
+@enduml
+
+@startuml Zarzadzanie pojazdami
+
+    actor "User / administrator" as USER
+    participant "Interface uzytkownika" as IFACE
+    participant "Aplikacja uzytkownika" as APK
+    participant "Serwer bazy danych" as DB
+
+    autoactivate on
+
+    USER --> USER
+    note right: Uzytkownik musi byc zalogowany \
+                \naby wykonac nastepujace czynnosci
+
+    USER --> IFACE : Wybierz opcje zarzadzania pojazdami
+    IFACE -> APK : wyswietlPanelZarzadzania()
+    APK -> IFACE : wyswietlDostepneOpcje()
+    USER --> IFACE : Wybierz jedna z opcji
+    IFACE --> APK : wybrana opcja
+    opt dodaj pojazd
+        APK -> IFACE : wyswietlPustyFormularz()
+        USER --> IFACE : uzupelnij formularz
+        IFACE -> IFACE : walidacjaDanych()
+        alt Dane poprawne
+            IFACE --> IFACE : wyswietlKomunikatOPowodzeniu()
+            IFACE --> APK : dane
+            APK -> DB : dodajPojazd(dane)
+            DB --> APK : przypisane id
+            APK --> IFACE : wyswietlPrzypisaneId()
+        else
+            IFACE --> IFACE : wyswietlKomunikatOBledzie()
+        end
+    end
+    opt usun pojazd
+        APK -> IFACE : wyswietlZapytanieOId()
+        USER --> IFACE : id
+        IFACE --> APK : id
+        APK -> DB : usunPojazd(id)
+        alt Pojazd istnieje
+            DB --> DB : usunPojazd(id)
+            DB --> APK : sukcess
+            APK --> IFACE : wyswietlKomunikatOPowodzeniu()
+        else
+            DB --> APK : blad
+            APK --> IFACE : wyswietlKomunikatOBlednymId()
+        end
+    end
+    opt edytuj pojazd
+        APK -> IFACE : wyswietlZapytanieOId()
+        USER --> IFACE : id
+        IFACE --> APK : id
+        APK -> DB : sprawdzCzyIdIstnieje(id)
+        alt id istnieje
+            DB --> APK : sukcess
+            APK -> IFACE : wyswietlFormularzZAktualnymiDanymi()
+            USER --> IFACE : poprawki w danych
+            IFACE --> APK : nowe dane
+            APK --> DB : zaktualizujDanePojazdu(id, dane)
+        else
+            DB --> APK : blad
+            APK --> IFACE : wyswietlKomunikatOBlednymId()
+        end
+    end
+
+@enduml
+
+@startuml Srednia predkosc na odcinku
+
+    actor "User / administrator" as USER
+    participant "Interface uzytkownika" as IFACE
+    participant "Aplikacja uzytkownika" as APK
+    participant "Serwer bazy danych" as DB
+
+    autoactivate on
+
+    USER --> USER
+    note right: Uzytkownik musi byc zalogowany \
+                \naby wykonac nastepujace czynnosci
+
+    USER --> IFACE : Wybierz opcje sredniej predkosci
+    IFACE -> APK : obliczSredniaPredkosc()
+    APK -> IFACE : wyswietlFormularz()
+    note right: w formularzu musi znalezc sie \
+                \n - uzytkownik i/lub pojazd \
+                \n - przedzial czasowy
+    USER --> IFACE : uzupelnij formularz
+    IFACE --> APK : dane z formularza
+    APK -> DB : pobierzSredniaPredkosc(id, okres)
+    DB --> APK : srednia predkosc
+    APK --> IFACE : wyswietlSredniaPredkosc()
+
+@enduml

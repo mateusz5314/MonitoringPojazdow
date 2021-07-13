@@ -1,0 +1,23 @@
+@startuml sequenceDiagramLokalizator
+
+participant "Main activity" as main
+participant "Client" as client
+participant "Finder" as finder
+
+autoactivate on
+
+main --> finder : Create object
+main --> client : Create object
+
+main --> main : ustaw id kierowcy
+main --> main : ustaw id pojazdu
+main -> finder : start location update
+loop while active
+    finder --> main : location data
+    main -> client : sendData(location data)
+    client -> client : sendDataToDatabase()
+    client --> client : result
+    client --> main : sending result
+end
+
+@enduml

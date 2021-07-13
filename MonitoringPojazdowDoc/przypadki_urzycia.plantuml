@@ -1,0 +1,26 @@
+@startuml usecases
+
+left to right direction
+
+package Uzytkownicy {
+  actor "Administrator systemu" as ADMIN
+  actor "Wlasciciel floty" as USER
+}
+
+package "Monitoring pojazdow" {
+  usecase "Logowanie" as LOGIN
+  usecase "Lokalizacja w przedziale czasu" as LOC_AT_TIME
+  usecase "Zarzadzanie pracownikami" as MANAGE_EMP
+  usecase "Zarzadzanie pojazdami" as MANAGE_VEH
+  usecase "Srednia predkosc na odcinku" as AVG_VEL
+}
+
+ADMIN --> LOGIN
+ADMIN --> MANAGE_EMP
+ADMIN --> MANAGE_VEH
+
+USER --> LOGIN
+USER --> LOC_AT_TIME
+USER --> AVG_VEL
+
+@enduml
